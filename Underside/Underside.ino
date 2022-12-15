@@ -1,37 +1,51 @@
-/*
-  Blink
+// # Editor     : roker
+// # Date       : 05.03.2018
 
-  Turns an LED on for one second, then off for one second, repeatedly.
+// # Product name: URM V5.0 ultrasonic sensor
+// # Product SKU : SEN0001
+// # Version     : 1.0
 
-  Most Arduinos have an on-board LED you can control. On the UNO, MEGA and ZERO
-  it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN is set to
-  the correct LED pin independent of which board is used.
-  If you want to know what pin the on-board LED is connected to on your Arduino
-  model, check the Technical Specs of your board at:
-  https://www.arduino.cc/en/Main/Products
+// # Description:
+// # The Sketch for scanning 180 degree area 2-800cm detecting range
+// # The sketch for using the URM37 PWM trigger pin mode from DFRobot
+// #   and writes the values to the serialport
+// # Connection:
+// #       Vcc (Arduino)    -> Pin 1 VCC (URM V5.0)
+// #       GND (Arduino)    -> Pin 2 GND (URM V5.0)
+// #       Pin 3 (Arduino)  -> Pin 4 ECHO (URM V5.0)
+// #       Pin 5 (Arduino)  -> Pin 6 COMP/TRIG (URM V5.0)
 
-  modified 8 May 2014
-  by Scott Fitzgerald
-  modified 2 Sep 2016
-  by Arturo Guadalupi
-  modified 8 Sep 2016
-  by Colby Newman
+// # Working Mode: PWM trigger pin  mode.
 
-  This example code is in the public domain.
+int URECHO = 10;  // PWM Output 0-50000US,Every 50US represent 1cm
+int URTRIG = 9;   // trigger pin
 
-  https://www.arduino.cc/en/Tutorial/BuiltInExamples/Blink
-*/
+unsigned int DistanceMeasured = 0;
 
-// the setup function runs once when you press reset or power the board
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(LED_BUILTIN, OUTPUT);
+  //Serial initialization
+  Serial.begin(9600);          // Sets the baud rate to 9600
+  pinMode(URTRIG, OUTPUT);     // A low pull on pin COMP/TRIG
+  digitalWrite(URTRIG, HIGH);  // Set to HIGH
+  pinMode(URECHO, INPUT);      // Sending Enable PWM mode command
+  delay(500);
+  Serial.println("Init the sensor");
 }
-
-// the loop function runs over and over again forever
 void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(1000);                      // wait for a second
-  digitalWrite(LED_BUILTIN, LOW);   // turn the LED off by making the voltage LOW
-  delay(1000);                      // wait for a second
+  Serial.print("Distance=");
+  digitalWrite(URTRIG, LOW);
+  delay(1);
+  digitalWrite(URTRIG, HIGH);
+
+  unsigned long LowLevelTime = pulseIn(URECHO, LOW);
+  if (LowLevelTime >= 50000)  // the reading is invalid.
+  {
+    Serial.println("Invalid");
+  } else {
+    DistanceMeasured = LowLevelTime / 50;  // every 50us low level stands for 1cm
+    Serial.print(DistanceMeasured);
+    Serial.println("cm");
+  }
+
+  //delay(200);
 }

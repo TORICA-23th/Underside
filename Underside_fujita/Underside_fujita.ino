@@ -93,7 +93,7 @@ void loop1() {
   digitalWrite(URTRIG, LOW);
   delay(1);
   digitalWrite(URTRIG, HIGH);
-  unsigned long LowLevelTime = pulseIn(URECHO, LOW, 30000); //timeout=6m*100cm*50us
+  unsigned long LowLevelTime = pulseIn(URECHO, LOW, 150000); //timeout=6m*100cm*50us
   if (LowLevelTime != 0)
   {
     unsigned int DistanceMeasured = LowLevelTime / 50; // every 50us low level stands for 1cm

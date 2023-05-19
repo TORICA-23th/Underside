@@ -74,7 +74,6 @@ void loop() {
   }
 
   if (dps.temperatureAvailable() && dps.pressureAvailable()) {
-    pinMode(25, LOW);
     dps.getEvents(&temp_event, &pressure_event);
 
     dps_pressure_m = pressure_event.pressure;
@@ -83,15 +82,17 @@ void loop() {
     sprintf(sendUART_BUF, "%.2f,%.2f,%.2f,%.2f\n", dps_pressure_m, dps_temperature_deg, dps_altitude_m, urm_altitude_m);
     SerialOUT.print(sendUART_BUF);
 
-    pinMode(25, HIGH);
+    
   }
   sd.flash();
 }
 
 void loop1() {
+  digitalWrite(25, LOW);
   digitalWrite(URTRIG, LOW);
   delay(1);
   digitalWrite(URTRIG, HIGH);
+  digitalWrite(25, HIGH);
   unsigned long LowLevelTime = pulseIn(URECHO, LOW);
   if (LowLevelTime <= 25000) { //50*500cm
     unsigned int DistanceMeasured = LowLevelTime / 50; // every 50us low level stands for 1cm

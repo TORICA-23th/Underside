@@ -90,17 +90,15 @@ void loop() {
 }
 
 void loop1() {
-  digitalWrite(URTRIG, LOW);
-  delay(1);
-  digitalWrite(URTRIG, HIGH);
-  unsigned long LowLevelTime = pulseIn(URECHO, LOW, 150000); //timeout=6m*100cm*50us
-  if (LowLevelTime != 0)
-  {
-    unsigned int DistanceMeasured = LowLevelTime / 50; // every 50us low level stands for 1cm
-    data_under_urm_altitude_m = (float)DistanceMeasured / 100.0;
-  }
-  for (int i = 0; i++; i < 10) {
-    sd.flash();
-    delay(10);
-  }
+  
+    digitalWrite(URTRIG, LOW);
+    delay(1);
+    digitalWrite(URTRIG, HIGH);
+    unsigned long LowLevelTime = pulseIn(URECHO, LOW);
+    if (LowLevelTime <= 50000) {
+      unsigned int DistanceMeasured = LowLevelTime / 50; // every 50us low level stands for 1cm
+      data_under_urm_altitude_m = (float)DistanceMeasured / 100.0;
+    }
+
+  sd.flash();// 数十msかかる処理で実行時間は予測不可・30Hz程度で実行したい
 }

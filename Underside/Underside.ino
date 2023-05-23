@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <TORICA_SD.h>
+#include <Adafruit_NeoPixel.h>
 
 #define SerialIN  Serial1
 #define SerialOUT Serial1
@@ -23,6 +24,11 @@ volatile float dps_temperature_deg = 0;
 volatile float dps_altitude_m = 0;
 volatile float urm_altitude_m = 0;
 
+int Power = 11;
+int PIN  = 12;
+#define NUMPIXELS 1
+
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   Serial1.setFIFOSize(1024);
@@ -31,6 +37,7 @@ void setup() {
 
   pinMode(16, OUTPUT);
   pinMode(25, OUTPUT);
+  pinMode(17, OUTPUT);
 
   Wire.setClock(100000);
   Wire.begin();
@@ -44,6 +51,10 @@ void setup() {
   Serial.println("DPS OK!");
   dps.configurePressure(DPS310_32HZ, DPS310_16SAMPLES);
   dps.configureTemperature(DPS310_32HZ, DPS310_2SAMPLES);
+
+  pixels.begin();
+  pinMode(Power, OUTPUT);
+  digitalWrite(Power, HIGH);
 }
 
 void setup1() {
@@ -59,7 +70,9 @@ char readUART_BUF[256];
 char sendUART_BUF[256];
 void loop() {
   while (SerialIN.available()) {
-    pinMode(16, LOW);
+    pixels.clear();
+    pixels.setPixelColor(0, pixels.Color(255, 0, 0));
+    pixels.show();
     int read_length = SerialIN.available();
     if (read_length >= readUART_BUF_SIZE - 1) {
       read_length = readUART_BUF_SIZE - 1;
@@ -70,10 +83,15 @@ void loop() {
     if (!SerialIN.available()) {
       delay(1);
     }
-    pinMode(16, HIGH);
+
+    pixels.clear();
+    pixels.show();
   }
 
   if (dps.temperatureAvailable() && dps.pressureAvailable()) {
+    pixels.clear();
+    pixels.setPixelColor(0, pixels.Color(0, 0, 255));
+    pixels.show();
     dps.getEvents(&temp_event, &pressure_event);
 
     dps_pressure_m = pressure_event.pressure;
@@ -82,17 +100,24 @@ void loop() {
     sprintf(sendUART_BUF, "%.2f,%.2f,%.2f,%.2f\n", dps_pressure_m, dps_temperature_deg, dps_altitude_m, urm_altitude_m);
     SerialOUT.print(sendUART_BUF);
 
-    
+    pixels.clear();
+    pixels.show();
   }
   sd.flash();
 }
 
+void LEDwrite(int status) {
+  digitalWrite(25, status);
+  digitalWrite(17, status);
+  digitalWrite(16, status);
+}
+
 void loop1() {
-  digitalWrite(25, LOW);
+  LEDwrite(LOW);
   digitalWrite(URTRIG, LOW);
   delay(1);
+  LEDwrite(HIGH);
   digitalWrite(URTRIG, HIGH);
-  digitalWrite(25, HIGH);
   unsigned long LowLevelTime = pulseIn(URECHO, LOW);
   if (LowLevelTime <= 25000) { //50*500cm
     unsigned int DistanceMeasured = LowLevelTime / 50; // every 50us low level stands for 1cm

@@ -39,29 +39,36 @@ void setup() {
   pinMode(25, OUTPUT);
   pinMode(17, OUTPUT);
 
-  Wire.setClock(100000);
+  delay(100);
+
+  Wire.setClock(400000);
   Wire.begin();
 
   Serial.println("DPS310");
-  if (! dps.begin_I2C()) {             // Can pass in I2C address here
+  while (! dps.begin_I2C()) {             // Can pass in I2C address here
     //if (! dps.begin_SPI(DPS310_CS)) {  // If you want to use SPI
     Serial.println("Failed to find DPS");
-    while (1) yield();
+    delay(100);
   }
   Serial.println("DPS OK!");
   dps.configurePressure(DPS310_32HZ, DPS310_16SAMPLES);
   dps.configureTemperature(DPS310_32HZ, DPS310_2SAMPLES);
 
-  pixels.begin();
   pinMode(Power, OUTPUT);
   digitalWrite(Power, HIGH);
+  pixels.begin();
+
+  while (SerialIN.available()) {
+    SerialIN.read();
+  }
+
 }
 
 void setup1() {
   pinMode(URTRIG, OUTPUT);    // A low pull on pin COMP/TRIG
   digitalWrite(URTRIG, HIGH); // Set to HIGH
   pinMode(URECHO, INPUT);     // Sending Enable PWM mode command
-
+  
   sd.begin();
 }
 

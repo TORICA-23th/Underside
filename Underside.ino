@@ -1,8 +1,8 @@
 #include <Adafruit_DPS310.h>
 #include <math.h>
 #include <Wire.h>
-#include <SPI.h>
-#include <SD.h>
+//#include <SPI.h>
+//#include <SD.h>
 #include <TORICA_SD.h>
 #include <Adafruit_NeoPixel.h>
 

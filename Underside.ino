@@ -62,6 +62,8 @@ void setup() {
     SerialIN.read();
   }
 
+  //delay for setup1
+  delay(100);
 }
 
 void setup1() {

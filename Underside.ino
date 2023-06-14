@@ -19,7 +19,7 @@ sensors_event_t temp_event, pressure_event;
 int URECHO = 26; // PWM Output 0-50000US,Every 50US represent 1cm
 int URTRIG = 27; // trigger pin
 
-volatile float dps_pressure_m = 0;
+volatile float dps_pressure_hPa = 0;
 volatile float dps_temperature_deg = 0;
 volatile float dps_altitude_m = 0;
 volatile float urm_altitude_m = 0;
@@ -40,7 +40,6 @@ void setup() {
   pinMode(17, OUTPUT);
 
   delay(100);
-
   Wire.setClock(400000);
   Wire.begin();
 
@@ -58,12 +57,12 @@ void setup() {
   digitalWrite(Power, HIGH);
   pixels.begin();
 
+  //delay for setup1
+  delay(100);
+  
   while (SerialIN.available()) {
     SerialIN.read();
   }
-
-  //delay for setup1
-  delay(100);
 }
 
 void setup1() {
@@ -103,10 +102,10 @@ void loop() {
     pixels.show();
     dps.getEvents(&temp_event, &pressure_event);
 
-    dps_pressure_m = pressure_event.pressure;
+    dps_pressure_hPa = pressure_event.pressure;
     dps_temperature_deg = temp_event.temperature;
-    dps_altitude_m = (pow(1013.25 / dps_pressure_m, 1 / 5.257) - 1) * (dps_temperature_deg + 273.15) / 0.0065;
-    sprintf(sendUART_BUF, "%.2f,%.2f,%.2f,%.2f\n", dps_pressure_m, dps_temperature_deg, dps_altitude_m, urm_altitude_m);
+    dps_altitude_m = (pow(1013.25 / dps_pressure_hPa, 1 / 5.257) - 1) * (dps_temperature_deg + 273.15) / 0.0065;
+    sprintf(sendUART_BUF, "%.2f,%.2f,%.2f,%.2f\n", dps_pressure_hPa, dps_temperature_deg, dps_altitude_m, urm_altitude_m);
     SerialOUT.print(sendUART_BUF);
 
     pixels.clear();

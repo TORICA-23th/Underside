@@ -59,7 +59,7 @@ void setup() {
 
   //delay for setup1
   delay(100);
-  
+
   while (SerialIN.available()) {
     SerialIN.read();
   }
@@ -69,7 +69,7 @@ void setup1() {
   pinMode(URTRIG, OUTPUT);    // A low pull on pin COMP/TRIG
   digitalWrite(URTRIG, HIGH); // Set to HIGH
   pinMode(URECHO, INPUT);     // Sending Enable PWM mode command
-  
+
   sd.begin();
 }
 
@@ -131,4 +131,8 @@ void loop1() {
     unsigned int DistanceMeasured = LowLevelTime / 50; // every 50us low level stands for 1cm
     urm_altitude_m = (float)DistanceMeasured / 100.0;
   }
+  else {
+    urm_altitude_m = 10.0;
+  }
+  //Serial.println(urm_altitude_m);
 }

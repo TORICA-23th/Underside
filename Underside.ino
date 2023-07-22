@@ -104,7 +104,7 @@ void loop() {
 
     dps_pressure_hPa = pressure_event.pressure;
     dps_temperature_deg = temp_event.temperature;
-    dps_altitude_m = (pow(1013.25 / dps_pressure_hPa, 1 / 5.257) - 1) * (dps_temperature_deg + 273.15) / 0.0065;
+    dps_altitude_m = (powf(1013.25 / dps_pressure_hPa, 1 / 5.257) - 1) * (dps_temperature_deg + 273.15) / 0.0065;
     sprintf(sendUART_BUF, "%.2f,%.2f,%.2f,%.2f\n", dps_pressure_hPa, dps_temperature_deg, dps_altitude_m, urm_altitude_m);
     SerialOUT.print(sendUART_BUF);
 

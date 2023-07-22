@@ -10,7 +10,7 @@
 #define SerialOUT Serial1
 
 int cs_SD = 28;
-TORICA_SD sd(cs_SD);
+TORICA_SD sd(cs_SD, false);
 char SD_BUF[256];
 
 Adafruit_DPS310 dps;
